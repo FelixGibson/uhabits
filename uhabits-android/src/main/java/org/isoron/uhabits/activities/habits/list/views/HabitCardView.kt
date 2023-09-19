@@ -33,6 +33,7 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import org.isoron.platform.gui.toInt
 import org.isoron.uhabits.R
 import org.isoron.uhabits.activities.common.views.RingView
@@ -46,6 +47,7 @@ import org.isoron.uhabits.utils.currentTheme
 import org.isoron.uhabits.utils.dp
 import org.isoron.uhabits.utils.sres
 import javax.inject.Inject
+import kotlin.random.Random
 
 class HabitCardViewFactory
 @Inject constructor(
@@ -128,6 +130,20 @@ class HabitCardView(
     private var label: TextView
     private var scoreRing: RingView
 
+    fun scaleInteger(input: Int): Int {
+        val randomValue = Random.nextDouble()
+
+        return when {
+            randomValue <= 0.5 -> input
+            randomValue <= 0.75 -> input * 2
+            randomValue <= 0.875 -> input * 4
+            randomValue <= 0.9375 -> input * 8
+            randomValue <= 0.96875 -> input * 16
+            randomValue <= 0.984375 -> input * 32
+            else -> input * 128
+        }
+    }
+
     private var currentToggleTaskId = 0
 
     init {
@@ -154,7 +170,23 @@ class HabitCardView(
         checkmarkPanel = checkmarkPanelFactory.create().apply {
             onToggle = { timestamp, value, notes ->
                 triggerRipple(timestamp)
-                habit?.let { behavior.onToggle(it, timestamp, value, notes) }
+                habit?.let {
+
+                    behavior.onToggle(it, timestamp, value, notes)
+                    val name = it.name
+                    val parts = name.trim().split("\\s+".toRegex())
+                    val lastPart = parts.lastOrNull { it.toIntOrNull() != null }
+
+                    val input = lastPart?.toInt() ?: 0
+                    if (input > 0) {
+                        val scaledInteger = scaleInteger(input)
+                        Toast.makeText(context, "Scaled integer: $scaledInteger", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "deminish : $input", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+
             }
             onEdit = { timestamp ->
                 triggerRipple(timestamp)
