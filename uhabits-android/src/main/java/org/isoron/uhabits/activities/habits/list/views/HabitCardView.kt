@@ -173,23 +173,30 @@ class HabitCardView(
                 habit?.let {
 
                     behavior.onToggle(it, timestamp, value, notes)
-                    val name = it.name
-                    val parts = name.trim().split("\\s+".toRegex())
-                    val lastPart = parts.lastOrNull { it.toIntOrNull() != null }
+                    if (value == 2) {
+                        val name = it.name
+                        val parts = name.trim().split("\\s+".toRegex())
+                        val lastPart = parts.lastOrNull { it.toIntOrNull() != null }
 
-                    val input = lastPart?.toInt() ?: 0
-                    var scaledInteger = 0
-                    if (input > 0) {
-                        scaledInteger = scaleInteger(input)
-                        Toast.makeText(context, "Scaled integer: $scaledInteger", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "deminish : $input", Toast.LENGTH_SHORT).show()
+                        val input = lastPart?.toInt() ?: 0
+                        var scaledInteger = 0
+                        val sharedPreferences = context.getSharedPreferences("earnings", Context.MODE_PRIVATE)
+                        val value = sharedPreferences.getInt("profit", 0)
+                        val editor = sharedPreferences.edit()
+
+                        if (input > 0) {
+                            scaledInteger = scaleInteger(input)
+                            Toast.makeText(context, "Scaled integer: $scaledInteger", Toast.LENGTH_SHORT).show()
+                            editor.putInt("profit", value + scaledInteger)
+                        } else {
+                            Toast.makeText(context, "deminish : $input", Toast.LENGTH_SHORT).show()
+                            editor.putInt("profit", value + input)
+
+                        }
+                        editor.apply()
+
+
                     }
-                    val sharedPreferences = context.getSharedPreferences("earnings", Context.MODE_PRIVATE)
-                    val value = sharedPreferences.getInt("profit", 0)
-                    val editor = sharedPreferences.edit()
-                    editor.putInt("profit", value + scaledInteger)
-                    editor.apply()
                 }
 
 
