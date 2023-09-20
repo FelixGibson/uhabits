@@ -130,17 +130,17 @@ class HabitCardView(
     private var label: TextView
     private var scoreRing: RingView
 
-    fun scaleInteger(input: Int): Int {
+    private fun scaleInteger(input: Int): Triple<Double, Int, Int> {
         val randomValue = Random.nextDouble()
 
         return when {
-            randomValue <= 0.5 -> input
-            randomValue <= 0.75 -> input * 2
-            randomValue <= 0.875 -> input * 4
-            randomValue <= 0.9375 -> input * 8
-            randomValue <= 0.96875 -> input * 16
-            randomValue <= 0.984375 -> input * 32
-            else -> input * 128
+            randomValue <= 0.8 -> Triple(0.8, 1, input)
+            randomValue <= 0.88 -> Triple(0.08, 2, input * 2)
+            randomValue <= 0.94 -> Triple(0.06, 4, input * 4)
+            randomValue <= 0.97 -> Triple(0.03, 8, input * 8)
+            randomValue <= 0.99 -> Triple(0.02, 16, input * 16)
+            randomValue <= 0.995 -> Triple(0.005, 32, input * 32)
+            else -> Triple(0.005, 64, input * 64)
         }
     }
 
@@ -179,17 +179,16 @@ class HabitCardView(
                         val lastPart = parts.lastOrNull { it.toIntOrNull() != null }
 
                         val input = lastPart?.toInt() ?: 0
-                        var scaledInteger = 0
                         val sharedPreferences = context.getSharedPreferences("earnings", Context.MODE_PRIVATE)
                         val value = sharedPreferences.getInt("profit", 0)
                         val editor = sharedPreferences.edit()
 
                         if (input > 0) {
-                            scaledInteger = scaleInteger(input)
-                            Toast.makeText(context, "Scaled integer: $scaledInteger", Toast.LENGTH_SHORT).show()
-                            editor.putInt("profit", value + scaledInteger)
+                            val triple = scaleInteger(input)
+                            Toast.makeText(context, "${triple.first} chance of ${triple.second} times : ${triple.third}", Toast.LENGTH_LONG).show()
+                            editor.putInt("profit", value + triple.third)
                         } else {
-                            Toast.makeText(context, "deminish : $input", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "diminish : $input", Toast.LENGTH_SHORT).show()
                             editor.putInt("profit", value + input)
 
                         }
