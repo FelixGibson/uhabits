@@ -98,6 +98,10 @@ class ListHabitsMenu @Inject constructor(
                 behavior.onViewFAQ()
                 return true
             }
+            R.id.actionClearEarnings -> {
+                behavior.onClearEarnings()
+                return true
+            }
 
             R.id.actionAbout -> {
                 behavior.onViewAbout()

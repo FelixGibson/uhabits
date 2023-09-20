@@ -100,4 +100,10 @@
         android:title="@string/about"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/actionClearEarnings"
+        android:orderInCategory="100"
+        android:title="@string/clear_earnings"
+        app:showAsAction="never"/>
+
 </menu>

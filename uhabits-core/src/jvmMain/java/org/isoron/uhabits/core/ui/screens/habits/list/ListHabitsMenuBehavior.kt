@@ -41,6 +41,10 @@ class ListHabitsMenuBehavior @Inject constructor(
         screen.showFAQScreen()
     }
 
+    fun onClearEarnings() {
+        screen.showClearEarnings()
+    }
+
     fun onViewAbout() {
         screen.showAboutScreen()
     }
@@ -133,6 +137,8 @@ class ListHabitsMenuBehavior @Inject constructor(
         fun showFAQScreen()
         fun showSettingsScreen()
         fun showSelectHabitTypeDialog()
+
+        fun showClearEarnings()
     }
 
     init {

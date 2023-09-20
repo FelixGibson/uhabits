@@ -164,6 +164,14 @@ class ListHabitsScreen
         dialog.show(activity.supportFragmentManager, "habitType")
     }
 
+    override fun showClearEarnings() {
+        val sharedPreferences = activity.getSharedPreferences("earnings", Context.MODE_PRIVATE)
+        val value = sharedPreferences.getInt("profit", 0)
+        val editor = sharedPreferences.edit()
+        editor.putInt("profit", 0)
+        editor.apply()
+    }
+
     override fun showDeleteConfirmationScreen(callback: OnConfirmedCallback, quantity: Int) {
         ConfirmDeleteDialog(activity, callback, quantity).dismissCurrentAndShow()
     }
