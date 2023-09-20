@@ -20,6 +20,7 @@
 package org.isoron.uhabits.activities.habits.list
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -56,6 +57,10 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
     lateinit var midnightTimer: MidnightTimer
     private val scope = CoroutineScope(Dispatchers.Main)
 
+    private val sharedPref: SharedPreferences by lazy {
+        getSharedPreferences("earnings", MODE_PRIVATE)
+    }
+
     private lateinit var menu: ListHabitsMenu
 
     override fun onQuestionMarksChanged() {
@@ -86,6 +91,12 @@ class ListHabitsActivity : AppCompatActivity(), Preferences.Listener {
         Thread.setDefaultUncaughtExceptionHandler(BaseExceptionHandler(this))
         component.listHabitsBehavior.onStartup()
         setContentView(rootView)
+        sharedPref.registerOnSharedPreferenceChangeListener(rootView.preferenceChangeListener)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        sharedPref.unregisterOnSharedPreferenceChangeListener(rootView.preferenceChangeListener)
     }
 
     override fun onPause() {

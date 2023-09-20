@@ -178,12 +178,18 @@ class HabitCardView(
                     val lastPart = parts.lastOrNull { it.toIntOrNull() != null }
 
                     val input = lastPart?.toInt() ?: 0
+                    var scaledInteger = 0
                     if (input > 0) {
-                        val scaledInteger = scaleInteger(input)
+                        scaledInteger = scaleInteger(input)
                         Toast.makeText(context, "Scaled integer: $scaledInteger", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(context, "deminish : $input", Toast.LENGTH_SHORT).show()
                     }
+                    val sharedPreferences = context.getSharedPreferences("earnings", Context.MODE_PRIVATE)
+                    val value = sharedPreferences.getInt("profit", 0)
+                    val editor = sharedPreferences.edit()
+                    editor.putInt("profit", value + scaledInteger)
+                    editor.apply()
                 }
 
 

@@ -20,6 +20,8 @@
 package org.isoron.uhabits.activities.habits.list
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
@@ -73,6 +75,16 @@ class ListHabitsRootView @Inject constructor(
     val hintView: HintView
     val header = HeaderView(context, preferences, midnightTimer)
 
+    val preferenceChangeListener =
+            SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+                if (key == "profit") {
+                    val newText = sharedPreferences.getInt(key, 0)
+                    tbar.title = resources.getString(R.string.main_activity_title) + ":" + newText;
+
+                }
+            }
+
+
     init {
         val hints = resources.getStringArray(R.array.hints)
         val hintList = hintListFactory.create(hints)
@@ -89,9 +101,10 @@ class ListHabitsRootView @Inject constructor(
             }
             addAtBottom(hintView)
         }
+        val sharedPrefTmp: SharedPreferences = context.getSharedPreferences("earnings", MODE_PRIVATE)
         rootView.setupToolbar(
             toolbar = tbar,
-            title = resources.getString(R.string.main_activity_title),
+            title = resources.getString(R.string.main_activity_title) + ":" + sharedPrefTmp.getInt("profit", 0),
             color = PaletteColor(17),
             displayHomeAsUpEnabled = false,
             theme = currentTheme()
