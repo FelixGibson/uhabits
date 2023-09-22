@@ -51,7 +51,7 @@ class HabitsApplication : Application() {
             val db = DatabaseUtils.getDatabaseFile(context)
             if (db.exists()) db.delete()
         }
-
+        MediaPlayerManager.initialize(this)
         try {
             DatabaseUtils.initializeDatabase(context)
         } catch (e: UnsupportedDatabaseVersionException) {

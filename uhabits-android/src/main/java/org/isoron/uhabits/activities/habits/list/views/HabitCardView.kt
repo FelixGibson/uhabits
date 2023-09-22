@@ -35,6 +35,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import org.isoron.platform.gui.toInt
+import org.isoron.uhabits.MediaPlayerManager
 import org.isoron.uhabits.R
 import org.isoron.uhabits.activities.common.views.RingView
 import org.isoron.uhabits.core.models.Habit
@@ -193,8 +194,7 @@ class HabitCardView(
 
                         }
                         editor.apply()
-
-
+                        MediaPlayerManager.playDingSound()
                     }
                 }
 
