@@ -133,16 +133,19 @@ class HabitCardView(
 
     private fun scaleInteger(input: Int): Triple<Double, Int, Int> {
         val randomValue = Random.nextDouble()
+        val scaleFactors = arrayOf(0.8, 0.15, 0.025, 0.005, 0.0005, 0.00005, 0.00005)
+        val multipliers = arrayOf(1, 2, 4, 8, 16, 32, 64)
 
-        return when {
-            randomValue <= 0.8 -> Triple(0.8, 1, input)
-            randomValue <= 0.88 -> Triple(0.08, 2, input * 2)
-            randomValue <= 0.94 -> Triple(0.06, 4, input * 4)
-            randomValue <= 0.97 -> Triple(0.03, 8, input * 8)
-            randomValue <= 0.99 -> Triple(0.02, 16, input * 16)
-            randomValue <= 0.995 -> Triple(0.005, 32, input * 32)
-            else -> Triple(0.005, 64, input * 64)
+        var cumulativeProbability = 0.0
+        for (i in scaleFactors.indices) {
+            cumulativeProbability += scaleFactors[i]
+            if (randomValue <= cumulativeProbability) {
+                return Triple(scaleFactors[i], multipliers[i], input * multipliers[i])
+            }
         }
+
+        // Default case if randomValue does not match any range
+        return Triple(scaleFactors.last(), multipliers.last(), input * multipliers.last())
     }
 
     private var currentToggleTaskId = 0
@@ -188,13 +191,14 @@ class HabitCardView(
                             val triple = scaleInteger(input)
                             Toast.makeText(context, "${triple.first} chance of ${triple.second} times : ${triple.third}", Toast.LENGTH_LONG).show()
                             editor.putInt("profit", value + triple.third)
+                            MediaPlayerManager.playDingSound()
+
                         } else {
                             Toast.makeText(context, "diminish : $input", Toast.LENGTH_SHORT).show()
                             editor.putInt("profit", value + input)
 
                         }
                         editor.apply()
-                        MediaPlayerManager.playDingSound()
                     }
                 }
 
