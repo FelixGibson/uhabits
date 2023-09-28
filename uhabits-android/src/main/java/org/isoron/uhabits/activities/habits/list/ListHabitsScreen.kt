@@ -242,14 +242,15 @@ class ListHabitsScreen
         notes: String,
         callback: ListHabitsBehavior.NumberPickerCallback
     ) {
-        val fm = (context as AppCompatActivity).supportFragmentManager
-        val dialog = NumberDialog()
-        dialog.arguments = Bundle().apply {
-            putDouble("value", value)
-            putString("notes", notes)
-        }
-        dialog.onToggle = { v, n -> callback.onNumberPicked(v, n) }
-        dialog.dismissCurrentAndShow(fm, "numberDialog")
+//        val fm = (context as AppCompatActivity).supportFragmentManager
+//        val dialog = NumberDialog()
+//        dialog.arguments = Bundle().apply {
+//            putDouble("value", value)
+//            putString("notes", notes)
+//        }
+//        dialog.onToggle = { v, n -> callback.onNumberPicked(v, n) }
+//        dialog.dismissCurrentAndShow(fm, "numberDialog")
+        callback.onNumberPicked(value + 1, notes);
     }
 
     override fun showCheckmarkPopup(

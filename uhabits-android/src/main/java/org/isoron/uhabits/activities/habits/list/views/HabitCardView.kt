@@ -148,6 +148,29 @@ class HabitCardView(
         return Triple(scaleFactors.last(), multipliers.last(), input * multipliers.last())
     }
 
+    private fun ding(name: String) {
+        val parts = name.trim().split("\\s+".toRegex())
+        val lastPart = parts.lastOrNull { it.toIntOrNull() != null }
+
+        val input = lastPart?.toInt() ?: 0
+        val sharedPreferences = context.getSharedPreferences("earnings", Context.MODE_PRIVATE)
+        val value = sharedPreferences.getInt("profit", 0)
+        val editor = sharedPreferences.edit()
+
+        if (input > 0) {
+            val triple = scaleInteger(input)
+            Toast.makeText(context, "${triple.first} chance of ${triple.second} times : ${triple.third}", Toast.LENGTH_LONG).show()
+            editor.putInt("profit", value + triple.third)
+            MediaPlayerManager.playDingSound()
+
+        } else {
+            Toast.makeText(context, "diminish : $input", Toast.LENGTH_SHORT).show()
+            editor.putInt("profit", value + input)
+
+        }
+        editor.apply()
+    }
+
     private var currentToggleTaskId = 0
 
     init {
@@ -178,27 +201,7 @@ class HabitCardView(
 
                     behavior.onToggle(it, timestamp, value, notes)
                     if (value == 2) {
-                        val name = it.name
-                        val parts = name.trim().split("\\s+".toRegex())
-                        val lastPart = parts.lastOrNull { it.toIntOrNull() != null }
-
-                        val input = lastPart?.toInt() ?: 0
-                        val sharedPreferences = context.getSharedPreferences("earnings", Context.MODE_PRIVATE)
-                        val value = sharedPreferences.getInt("profit", 0)
-                        val editor = sharedPreferences.edit()
-
-                        if (input > 0) {
-                            val triple = scaleInteger(input)
-                            Toast.makeText(context, "${triple.first} chance of ${triple.second} times : ${triple.third}", Toast.LENGTH_LONG).show()
-                            editor.putInt("profit", value + triple.third)
-                            MediaPlayerManager.playDingSound()
-
-                        } else {
-                            Toast.makeText(context, "diminish : $input", Toast.LENGTH_SHORT).show()
-                            editor.putInt("profit", value + input)
-
-                        }
-                        editor.apply()
+                        ding(it.name)
                     }
                 }
 
@@ -214,7 +217,10 @@ class HabitCardView(
             visibility = GONE
             onEdit = { timestamp ->
                 triggerRipple(timestamp)
-                habit?.let { behavior.onEdit(it, timestamp) }
+                habit?.let {
+                    behavior.onEdit(it, timestamp)
+                    ding(it.name)
+                }
             }
         }
 
