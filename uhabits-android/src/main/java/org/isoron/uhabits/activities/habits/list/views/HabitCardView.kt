@@ -26,6 +26,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -133,18 +134,28 @@ class HabitCardView(
 
     private fun scaleInteger(input: Int): Triple<Double, Int, Int> {
         val randomValue = Random.nextDouble()
-        val scaleFactors = arrayOf(0.8, 0.15, 0.025, 0.005, 0.0005, 0.00005, 0.00005)
+        // Initial scale factors without the catch-all
+        val initialScaleFactors = arrayOf(0.8, 0.15, 0.025, 0.005, 0.0005, 0.00005, 0.00005)
         val multipliers = arrayOf(1, 2, 4, 8, 16, 32, 64)
+
+        // Calculate the remaining probability for the catch-all case
+        val remainingProbability = 1.0 - initialScaleFactors.sum()
+        // Ensure the remaining probability is not negative
+        require(remainingProbability >= 0) { "The sum of the scale factors exceeds 1.0" }
+
+        // Append the catch-all scale factor to the initial list
+        val scaleFactors = initialScaleFactors + remainingProbability
 
         var cumulativeProbability = 0.0
         for (i in scaleFactors.indices) {
             cumulativeProbability += scaleFactors[i]
-            if (randomValue <= cumulativeProbability) {
-                return Triple(scaleFactors[i], multipliers[i], input * multipliers[i])
+            if (randomValue < cumulativeProbability) {
+                return Triple(scaleFactors[i], multipliers.getOrElse(i) { multipliers[1] }, input * multipliers.getOrElse(i) { multipliers[1] })
             }
         }
 
-        // Default case if randomValue does not match any range
+        // This case should now be effectively unreachable.
+        // We keep it for safety and use the last multiplier for any unhandled case.
         return Triple(scaleFactors.last(), multipliers.last(), input * multipliers.last())
     }
 
@@ -160,6 +171,7 @@ class HabitCardView(
         if (input > 0) {
             val triple = scaleInteger(input)
             Toast.makeText(context, "${triple.first} chance of ${triple.second} times : ${triple.third}", Toast.LENGTH_LONG).show()
+            Log.d("chance", "${triple.first} chance of ${triple.second} times : ${triple.third}");
             editor.putInt("profit", value + triple.third)
             MediaPlayerManager.playDingSound()
 
