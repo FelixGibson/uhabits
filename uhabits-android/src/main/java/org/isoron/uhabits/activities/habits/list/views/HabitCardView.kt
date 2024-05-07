@@ -134,29 +134,27 @@ class HabitCardView(
 
     private fun scaleInteger(input: Int): Triple<Double, Int, Int> {
         val randomValue = Random.nextDouble()
-        // Initial scale factors without the catch-all
-        val initialScaleFactors = arrayOf(0.8, 0.15, 0.025, 0.005, 0.0005, 0.00005, 0.00005)
-        val multipliers = arrayOf(1, 2, 4, 8, 16, 32, 64)
+        val scaleFactors = arrayOf(300f, 100f, 76f, 40f, 20f, 10f, 5f, 2f)
+        val multipliers = arrayOf(1, 2, 4, 8, 10, 20, 30, 50)
 
-        // Calculate the remaining probability for the catch-all case
-        val remainingProbability = 1.0 - initialScaleFactors.sum()
-        // Ensure the remaining probability is not negative
-        require(remainingProbability >= 0) { "The sum of the scale factors exceeds 1.0" }
-
-        // Append the catch-all scale factor to the initial list
-        val scaleFactors = initialScaleFactors + remainingProbability
+        val scaleFactorSum = scaleFactors.sum()
 
         var cumulativeProbability = 0.0
-        for (i in scaleFactors.indices) {
-            cumulativeProbability += scaleFactors[i]
+        var scaleFactorPercentage: Double
+        for ((index, scaleFactor) in scaleFactors.withIndex()) {
+            // Calculate percentage of each scale factor based on the total sum
+            scaleFactorPercentage = scaleFactor.toDouble() / scaleFactorSum
+            cumulativeProbability += scaleFactorPercentage
             if (randomValue < cumulativeProbability) {
-                return Triple(scaleFactors[i], multipliers.getOrElse(i) { multipliers[1] }, input * multipliers.getOrElse(i) { multipliers[1] })
+                return Triple(scaleFactor.toDouble(), multipliers[index], input * multipliers[index])
             }
         }
 
-        // This case should now be effectively unreachable.
-        // We keep it for safety and use the last multiplier for any unhandled case.
-        return Triple(scaleFactors.last(), multipliers.last(), input * multipliers.last())
+        // In case we go through the loop without triggering a return
+        // Use the last index as default - though this should not happen
+        scaleFactorPercentage = scaleFactors.last() / scaleFactorSum.toDouble()
+        val lastIndex = multipliers.size - 1
+        return Triple(scaleFactorPercentage, multipliers[lastIndex], input * multipliers[lastIndex])
     }
 
     private fun ding(name: String) {
