@@ -146,7 +146,7 @@ class HabitCardView(
             scaleFactorPercentage = scaleFactor.toDouble() / scaleFactorSum
             cumulativeProbability += scaleFactorPercentage
             if (randomValue < cumulativeProbability) {
-                return Triple(scaleFactor.toDouble(), multipliers[index], input * multipliers[index])
+                return Triple(scaleFactorPercentage, multipliers[index], input * multipliers[index])
             }
         }
 
@@ -168,8 +168,8 @@ class HabitCardView(
 
         if (input > 0) {
             val triple = scaleInteger(input)
-            Toast.makeText(context, "${triple.first} chance of ${triple.second} times : ${triple.third}", Toast.LENGTH_LONG).show()
-            Log.d("chance", "${triple.first} chance of ${triple.second} times : ${triple.third}");
+            Toast.makeText(context, "${"%.2f".format(triple.first)} of ${triple.second}X : ${triple.third}", Toast.LENGTH_LONG).show()
+            Log.d("chance", "${"%.2f".format(triple.first)} of ${triple.second}X : ${triple.third}");
             editor.putInt("profit", value + triple.third)
             MediaPlayerManager.playDingSound()
 
