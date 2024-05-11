@@ -134,7 +134,7 @@ class HabitCardView(
 
     private fun scaleInteger(input: Int): Triple<Double, Int, Int> {
         val randomValue = Random.nextDouble()
-        val scaleFactors = arrayOf(300f, 100f, 76f, 40f, 20f, 10f, 5f, 2f)
+        val scaleFactors = arrayOf(300f, 120f, 96f, 40f, 25f, 13f, 6f, 3f)
         val multipliers = arrayOf(1, 2, 4, 8, 10, 20, 30, 50)
 
         val scaleFactorSum = scaleFactors.sum()
@@ -168,7 +168,7 @@ class HabitCardView(
 
         if (input > 0) {
             val triple = scaleInteger(input)
-            Toast.makeText(context, "${"%.2f".format(triple.first)} of ${triple.second}X : ${triple.third}", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, " ${"%.5f".format(triple.first)}% \n ${triple.second}X \n ${triple.third} points", Toast.LENGTH_LONG).show()
             Log.d("chance", "${"%.2f".format(triple.first)} of ${triple.second}X : ${triple.third}");
             editor.putInt("profit", value + triple.third)
             MediaPlayerManager.playDingSound()
