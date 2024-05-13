@@ -168,7 +168,11 @@ class HabitCardView(
 
         if (input > 0) {
             val triple = scaleInteger(input)
-            Toast.makeText(context, " ${"%.5f".format(triple.first)}% \n ${triple.second}X \n ${triple.third} points", Toast.LENGTH_LONG).show()
+            var star = "";
+            for (i in 1..triple.second) {
+                star += "*"
+            }
+            Toast.makeText(context, " ${"%.5f".format(triple.first)}% \n $star   ${triple.third} points", Toast.LENGTH_LONG).show()
             Log.d("chance", "${"%.2f".format(triple.first)} of ${triple.second}X : ${triple.third}");
             editor.putInt("profit", value + triple.third)
             MediaPlayerManager.playDingSound()
