@@ -134,27 +134,45 @@ class HabitCardView(
 
     private fun scaleInteger(input: Int): Triple<Double, Int, Int> {
         val randomValue = Random.nextDouble()
-        val scaleFactors = arrayOf(300f, 120f, 96f, 40f, 25f, 13f, 6f, 3f)
-        val multipliers = arrayOf(1, 2, 4, 8, 10, 20, 30, 50)
+        val factorsAndMultipliers = arrayOf(
+                Pair(100000, 0), //Commented out ranges can be included if desired
+                Pair(70000, 1),
+                Pair(50000, 2),
+                Pair(32000, 4),
+                Pair(16000, 8),
+                Pair(8000, 10),
+                Pair(4000, 20),
+                Pair(2000, 30),
+                Pair(1600, 50),
+                Pair(800, 100),
+                Pair(400, 200),
+                Pair(200, 400),
+                Pair(100, 800),
+                Pair(64, 1600),
+                Pair(32, 3200),
+                Pair(16, 6300),
+                Pair(8, 10000),
+                Pair(8, 50000),
+                Pair(3, 100000),
+                Pair(1, 1000000)
+        )
 
-        val scaleFactorSum = scaleFactors.sum()
+        val scaleFactorSum = factorsAndMultipliers.sumOf { it.first.toDouble() }
 
         var cumulativeProbability = 0.0
         var scaleFactorPercentage: Double
-        for ((index, scaleFactor) in scaleFactors.withIndex()) {
+        for ((scaleFactor, multiplier) in factorsAndMultipliers) {
             // Calculate percentage of each scale factor based on the total sum
             scaleFactorPercentage = scaleFactor.toDouble() / scaleFactorSum
             cumulativeProbability += scaleFactorPercentage
             if (randomValue < cumulativeProbability) {
-                return Triple(scaleFactorPercentage, multipliers[index], input * multipliers[index])
+                return Triple(scaleFactorPercentage, multiplier, input * multiplier)
             }
         }
+        val (scaleFactor, multiplier) = factorsAndMultipliers.first()
 
-        // In case we go through the loop without triggering a return
-        // Use the last index as default - though this should not happen
-        scaleFactorPercentage = scaleFactors.last() / scaleFactorSum.toDouble()
-        val lastIndex = multipliers.size - 1
-        return Triple(scaleFactorPercentage, multipliers[lastIndex], input * multipliers[lastIndex])
+        scaleFactorPercentage = scaleFactor / scaleFactorSum.toDouble()
+        return Triple(scaleFactorPercentage,multiplier, input * multiplier)
     }
 
     private fun ding(name: String) {
@@ -172,10 +190,12 @@ class HabitCardView(
             for (i in 1..triple.second) {
                 star += "*"
             }
-            Toast.makeText(context, " ${"%.5f".format(triple.first)}% \n $star   ${triple.third} points", Toast.LENGTH_LONG).show()
-            Log.d("chance", "${"%.2f".format(triple.first)} of ${triple.second}X : ${triple.third}");
-            editor.putInt("profit", value + triple.third)
-            MediaPlayerManager.playDingSound()
+            if (triple.second > 0) {
+                Toast.makeText(context, " ${"%.5f".format(triple.first)}% \n $star   ${triple.third} points", Toast.LENGTH_LONG).show()
+                Log.d("chance", "${"%.2f".format(triple.first)} of ${triple.second}X : ${triple.third}");
+                editor.putInt("profit", value + triple.third)
+                MediaPlayerManager.playDingSound()
+            }
 
         } else {
             Toast.makeText(context, "diminish : $input", Toast.LENGTH_SHORT).show()
