@@ -206,18 +206,7 @@ class HabitCardView(
                 editor.putInt("profit", value + triple.third)
                 MediaPlayerManager.playDingSound()
 
-                // 生成震动模式
-                val vibrationPattern = LongArray(triple.second * 2) { i -> if (i % 2 == 0) 0 else 100L }
-                for (i in vibrationPattern.indices) {
-                    if (i % 2 == 1) {
-                        vibrationPattern[i] = 100L // 震动时长 100 毫秒
-                    } else {
-                        vibrationPattern[i] = 50L // 暂停时长 50 毫秒
-                    }
-                }
-
-                // 让手机震动
-                vibrator.vibrate(VibrationEffect.createWaveform(vibrationPattern, -1))
+                vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
             }
 
         } else {
