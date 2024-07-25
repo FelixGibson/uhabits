@@ -25,6 +25,9 @@ import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Handler
 import android.os.Looper
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.text.TextUtils
 import android.util.Log
 import android.view.Gravity
@@ -184,17 +187,37 @@ class HabitCardView(
         val value = sharedPreferences.getInt("profit", 0)
         val editor = sharedPreferences.edit()
 
+        // 获取 Vibrator 实例
+        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
         if (input > 0) {
             val triple = scaleInteger(input)
-            var star = "";
+            var star = ""
             for (i in 1..triple.second) {
                 star += "*"
             }
             if (triple.second > 0) {
                 Toast.makeText(context, " ${"%.5f".format(triple.first)}% \n $star   ${triple.third} points", Toast.LENGTH_LONG).show()
-                Log.d("chance", "${"%.2f".format(triple.first)} of ${triple.second}X : ${triple.third}");
+                Log.d("chance", "${"%.2f".format(triple.first)} of ${triple.second}X : ${triple.third}")
                 editor.putInt("profit", value + triple.third)
                 MediaPlayerManager.playDingSound()
+
+                // 生成震动模式
+                val vibrationPattern = LongArray(triple.second * 2) { i -> if (i % 2 == 0) 0 else 100L }
+                for (i in vibrationPattern.indices) {
+                    if (i % 2 == 1) {
+                        vibrationPattern[i] = 100L // 震动时长 100 毫秒
+                    } else {
+                        vibrationPattern[i] = 50L // 暂停时长 50 毫秒
+                    }
+                }
+
+                // 让手机震动
+                vibrator.vibrate(VibrationEffect.createWaveform(vibrationPattern, -1))
             }
 
         } else {
