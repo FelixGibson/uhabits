@@ -194,7 +194,7 @@ class HabitCardView(
         } else {
             context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         }
-        if (input > 0) {
+       if (input > 0) {
             val triple = scaleInteger(input)
             var star = ""
             for (i in 1..triple.second) {
@@ -204,9 +204,6 @@ class HabitCardView(
                 Toast.makeText(context, " ${"%.5f".format(triple.first)}% \n $star   ${triple.third} points", Toast.LENGTH_LONG).show()
                 Log.d("chance", "${"%.2f".format(triple.first)} of ${triple.second}X : ${triple.third}")
                 editor.putInt("profit", value + triple.third)
-                MediaPlayerManager.playDingSound()
-
-                vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
             }
 
         } else {
@@ -214,6 +211,8 @@ class HabitCardView(
             editor.putInt("profit", value + input)
 
         }
+        MediaPlayerManager.playDingSound()
+        vibrator.vibrate(VibrationEffect.createOneShot(1000, 255))
         editor.apply()
     }
 

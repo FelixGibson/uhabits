@@ -8,7 +8,7 @@ object MediaPlayerManager {
 
     fun initialize(context: Context) {
         if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(context.applicationContext, R.raw.ding)
+            mediaPlayer = MediaPlayer.create(context.applicationContext, R.raw.reward)
         }
     }
 
